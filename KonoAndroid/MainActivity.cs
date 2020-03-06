@@ -81,20 +81,23 @@ namespace KonoAndroid
 
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
-            int id = item.ItemId;
-            if (id == Resource.Id.action_settings)
+            if (item == null)
+            {
+                throw new NullReferenceException();
+            }
+            else if (item.ItemId == Resource.Id.action_settings)
             {
                 System.Diagnostics.Debug.WriteLine("action_settings");
                 Toast.MakeText(this, "action_settings", ToastLength.Short).Show();
                 return true;
             }
-            else if (id == Resource.Id.action_Test)
+            else if (item.ItemId == Resource.Id.action_Test)
             {
                 System.Diagnostics.Debug.WriteLine("action_Test");
                 Toast.MakeText(this, "action_Test", ToastLength.Short).Show();
                 return true;
             }
-            else if (id == Resource.Id.action_yo)
+            else if (item.ItemId == Resource.Id.action_yo)
             {
                 System.Diagnostics.Debug.WriteLine("action_yo");
                 Toast.MakeText(this, "action_yo", ToastLength.Short).Show();
@@ -112,31 +115,34 @@ namespace KonoAndroid
 
         public bool OnNavigationItemSelected(IMenuItem item)
         {
-            int id = item.ItemId;
-            if (id == Resource.Id.nav_inbox)
+            if (item==null)
+            {
+                throw new NullReferenceException();
+            }
+            else if (item.ItemId == Resource.Id.nav_inbox)
             {
                 fragment = new FragmentInbox();
                 Title = Resources.GetString(Resource.String.title_fragment_inbox);
             }
-            else if (id == Resource.Id.nav_today)
+            else if (item.ItemId == Resource.Id.nav_today)
             {
                 fragment = new FragmentToday();
                 Title = Resources.GetString(Resource.String.title_fragment_today);
             }
-            else if (id == Resource.Id.nav_next_7_days)
+            else if (item.ItemId == Resource.Id.nav_next_7_days)
             {
                 fragment = new FragmentNext7Days();
                 Title = Resources.GetString(Resource.String.title_fragment_next_7_days);
             }
-            else if (id == Resource.Id.nav_manage)
+            else if (item.ItemId == Resource.Id.nav_manage)
             {
                 fragment = new FragmentSettings();
                 Title = Resources.GetString(Resource.String.title_fragment_settings);
             }
-            else if (id == Resource.Id.nav_share)
+            else if (item.ItemId == Resource.Id.nav_share)
             {
             }
-            else if (id == Resource.Id.nav_send)
+            else if (item.ItemId == Resource.Id.nav_send)
             {
             }
 

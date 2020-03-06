@@ -11,7 +11,8 @@ namespace KonoAndroid
     [Activity(Theme = "@style/MyTheme.Splash", MainLauncher = true, NoHistory = true)]
     public class SplashActivity : AppCompatActivity
     {
-        private static TodoItemDatabase database;
+        //private static TodoItemDatabase database;
+        private static DatabaseToDo databaseToDo;
 
         private static readonly string TAG = "X:" + typeof(SplashActivity).Name;
 
@@ -19,6 +20,7 @@ namespace KonoAndroid
         {
             base.OnCreate(savedInstanceState, persistentState);
             Log.Debug(TAG, "SplashActivity.OnCreate");
+
         }
 
         // Launches the startup task
@@ -32,15 +34,15 @@ namespace KonoAndroid
         // Prevent the back button from canceling the startup process
         public override void OnBackPressed() { }
 
-        public static TodoItemDatabase Database
+        public static DatabaseToDo DatabaseToDo
         {
             get
             {
-                if (database == null)
+                if (databaseToDo == null)
                 {
-                    database = new TodoItemDatabase();
+                    databaseToDo = new DatabaseToDo(Constants.DatabasePath);
                 }
-                return database;
+                return databaseToDo;
             }
         }
 

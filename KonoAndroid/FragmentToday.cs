@@ -1,5 +1,6 @@
 ﻿using Android.OS;
 using Android.Views;
+using System;
 
 namespace KonoAndroid
 {
@@ -14,6 +15,11 @@ namespace KonoAndroid
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
+            if (inflater == null)
+            {
+                throw new NullReferenceException();
+
+            }
             // Use this to return your custom view for this Fragment
             return inflater.Inflate(Resource.Layout.fragment_today, container, false);
 

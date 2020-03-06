@@ -2,110 +2,125 @@
 using Android.Support.V4.App;
 using Android.Views;
 using Android.Widget;
-using KonoAndroid.Model;
 using System;
 using System.Collections.Generic;
 
 namespace KonoAndroid
 {
-    public class FragmentInbox : Android.Support.V4.App.Fragment
+    public class FragmentInbox : Fragment
     {
-        private Button button1;
-        private Button button2;
-        private Button button3;
-        private TextView textView1;
-        private TextView textView2;
+        
+        ExpandableListAdapter listAdapter;
+        ExpandableListView expListView;
+        List<string> listDataHeader;
+        Dictionary<string, List<string>> listDataChild;
+        int previousGroup = -1;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
             // Create your fragment here
+
+
+
+
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
+            if (inflater==null)
+            {
+                throw new NullReferenceException();
+            }
             // Use this to return your custom view for this Fragment
             View view = inflater.Inflate(Resource.Layout.fragment_inbox, container, false);
 
-            button1 = view.FindViewById<Button>(Resource.Id.button1);
-            button2 = view.FindViewById<Button>(Resource.Id.button2);
-            button3 = view.FindViewById<Button>(Resource.Id.fragment1_button3);
 
-            textView1 = view.FindViewById<TextView>(Resource.Id.textView1);
-            textView2 = view.FindViewById<TextView>(Resource.Id.textView2);
 
-            textView1.Text = Constants.DatabasePath;
-            button1.Click += Button1_Click;
-            button2.Click += Button2_Click;
-            button3.Click += Button3_Click;
+            expListView = view.FindViewById<ExpandableListView>(Resource.Id.lvExp);
+
+            // Prepare list data
+            FnGetListData();
+
+            //Bind list
+            listAdapter = new ExpandableListAdapter(Activity, listDataHeader, listDataChild);
+            expListView.SetAdapter(listAdapter);
+
+            FnClickEvents();
 
             return view;
 
             // return base.OnCreateView(inflater, container, savedInstanceState);
         }
-
-        private async void Button2_Click(object sender, System.EventArgs e)
+        void FnClickEvents()
         {
-            System.Diagnostics.Debug.WriteLine("Button2_Click");
+            //Listening to child item selection
+            expListView.ChildClick += delegate (object sender, ExpandableListView.ChildClickEventArgs e) {
+                Toast.MakeText(Context, "child clicked", ToastLength.Short).Show();
+            };
 
-            Random random = new Random();
-            var todoItem = new TodoItem() { Title = random.NextDouble().ToString(), Completed = false, Comment = "Yp" };
-            await SplashActivity.Database.SaveItemAsync(todoItem).ConfigureAwait(true);
+            //Listening to group expand
+            //modified so that on selection of one group other opened group has been closed
+            expListView.GroupExpand += delegate (object sender, ExpandableListView.GroupExpandEventArgs e) {
+
+                if (e.GroupPosition != previousGroup)
+                    expListView.CollapseGroup(previousGroup);
+                previousGroup = e.GroupPosition;
+            };
+
+            //Listening to group collapse
+            expListView.GroupCollapse += delegate (object sender, ExpandableListView.GroupCollapseEventArgs e) {
+                Toast.MakeText(Context, "group collapsed", ToastLength.Short).Show();
+            };
+
         }
-
-        private async void Button3_Click(object sender, System.EventArgs e)
+        void FnGetListData()
         {
-            System.Diagnostics.Debug.WriteLine("Button3_Click");
+            listDataHeader = new List<string>();
+            listDataChild = new Dictionary<string, List<string>>();
 
-            Random random = new Random();
-            var todoItem = new TodoItem() { Title = random.NextDouble().ToString(), Completed = false, Comment = "Yp" };
-            List<TodoItem> todoItems = await SplashActivity.Database.GetItemsAsync().ConfigureAwait(false);
-            if (todoItems == null)
+            // Adding child data
+            listDataHeader.Add("Computer science");
+            listDataHeader.Add("Electrocs & comm.");
+            listDataHeader.Add("Mechanical");
+
+            // Adding child data
+            var lstCS = new List<string>
             {
-                System.Diagnostics.Debug.WriteLine("todoItems==null");
-            }
-            else
+                "Data structure",
+                "C# Programming",
+                "Java programming",
+                "ADA",
+                "Operation reserach",
+                "OOPS with C",
+                "C++ Programming"
+            };
+
+            var lstEC = new List<string>
             {
-                System.Diagnostics.Debug.WriteLine(todoItems.Count);
-            }
-            await SplashActivity.Database.SaveItemAsync(todoItem).ConfigureAwait(false);
-        }
+                "Field Theory",
+                "Logic Design",
+                "Analog electronics",
+                "Network analysis",
+                "Micro controller",
+                "Signals and system"
+            };
 
-        private void Button1_Click(object sender, System.EventArgs e)
-        {
-            Fragment parentFragment = ParentFragment;
+            var lstMech = new List<string>
+            {
+                "Instrumentation technology",
+                "Dynamics of machinnes",
+                "Energy engineering",
+                "Design of machine",
+                "Turbo machine",
+                "Energy conversion"
+            };
 
-            //NavigationView navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
-            //navigationView.SetNavigationItemSelectedListener(this);
-
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    navigationView.Menu.Add(i.ToString());
-            //}
-
-            //navigationView.Menu.FindItem(Resource.Id.nav_group_main);
-            //NavigationView navigationView = View.FindViewById<NavigationView>(Resource.Id.nav_view);
-
-            ((MainActivity)Activity).AddItemToNavView("Get Rekt");
-
-            //Android.Support.V4.Widget.DrawerLayout mylayout = (Android.Support.V4.Widget.DrawerLayout)LayoutInflater.Inflate(Resource.Layout.activity_main, null);
-            //NavigationView navigationView = mylayout.FindViewById<NavigationView>(Resource.Id.nav_view);
-
-            ////NavigationView navigationView = (NavigationView)LayoutInflater.Inflate(Resource.Menu.activity_main_drawer, null);
-            //if (navigationView == null)
-            //{
-            //    System.Diagnostics.Debug.WriteLine("damn null");
-            //}
-            //else
-            //{
-            //    navigationView.Menu.Add("ffs please");
-            //    int i = ((ViewGroup)View.Parent).Id;
-            //    // i = ((ViewGroup)View.Parent).RootView.Id;
-            //    System.Diagnostics.Debug.WriteLine(i);
-            //}
-
-            textView2.Text = Constants.DatabasePath;
+            // Header, Child data
+            listDataChild.Add(listDataHeader[0], lstCS);
+            listDataChild.Add(listDataHeader[1], lstEC);
+            listDataChild.Add(listDataHeader[2], lstMech);
         }
     }
 }
