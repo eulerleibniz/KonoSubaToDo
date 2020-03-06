@@ -1,0 +1,49 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:id="@+id/button1"
+        android:textSize="25sp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"/>
+    <TextView
+        android:text="Path Here"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView1"/>
+    <TextView
+        android:text="Path Here"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Menu Item"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/button2"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Menu Item"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/fragment1_button3"/>
+
+    <TextView
+    android:text="Sans Source Pro semi-bold italic, 600 weight, italic"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fontFamily="@font/sourcesanspro"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:gravity="center_horizontal"
+    android:fontWeight="600"
+    android:textStyle="italic"
+    />
+
+</LinearLayout>
