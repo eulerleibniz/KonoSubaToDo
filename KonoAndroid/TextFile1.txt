@@ -1,0 +1,282 @@
+﻿using Android.App;
+using Android.Content;
+using Android.OS;
+using Android.Views;
+using Android.Widget;
+using System;
+using System.Collections.Generic;
+
+namespace KonoAndroid
+{
+    public class ExpandableListAdapter : BaseExpandableListAdapter, ExpandableListView.IOnChildClickListener, CheckBox.IOnCheckedChangeListener
+    {
+        private ChildViewHolder childViewHolder;
+        private GroupViewHolder groupViewHolder;
+
+        //private int mGroupPosition;
+        //private int mChildPosition;
+
+        private readonly Activity _context;
+
+
+
+        // Dictionary for keeping track of our checkbox check states
+        private Dictionary<int, bool[]> _cildCheckStates;
+
+        // header data
+        private readonly List<string> _listDataHeader;
+
+        // child data in format of header title, child title
+        private readonly Dictionary<string, List<string>> _listDataChild;
+
+        public ExpandableListAdapter(Activity context, List<string> listDataHeader, Dictionary<String, List<string>> listChildData)
+        {
+            _context = context;
+            _listDataHeader = listDataHeader;
+            _listDataChild = listChildData;
+
+            // Initialize our hashmap containing our check states here
+            _cildCheckStates = new Dictionary<int, bool[]>();
+        }
+
+        public int getNumberOfCheckedItemsInGroup(int mGroupPosition)
+        {
+            bool[] getChecked = _cildCheckStates[mGroupPosition];
+            int count = 0;
+            if (getChecked != null)
+            {
+                for (int j = 0; j < getChecked.Length; ++j)
+                {
+                    if (getChecked[j] == true) count++;
+                }
+            }
+            return count;
+        }
+
+        //for cchild item view
+        public override Java.Lang.Object GetChild(int groupPosition, int childPosition)
+        {
+            return _listDataChild[_listDataHeader[groupPosition]][childPosition];
+        }
+
+        public override long GetChildId(int groupPosition, int childPosition)
+        {
+            return childPosition;
+        }
+
+        public override View GetChildView(int groupPosition, int childPosition, bool isLastChild, View convertView, ViewGroup parent)
+        {
+            string childText = (string)GetChild(groupPosition, childPosition);
+            //if (convertView == null)
+            //{
+            //    convertView = _context.LayoutInflater.Inflate(Resource.Layout.custom_layout_list_item, null);
+            //}
+            //TextView txtListChild = (TextView)convertView.FindViewById(Resource.Id.lblListItem);
+            //TextView txtListChild2 = (TextView)convertView.FindViewById(Resource.Id.lblListItem2);
+            //txtListChild.Text = childText;
+
+            //Random random = new Random();
+
+            //txtListChild2.Text = childText + random.NextDouble();
+            //return convertView;
+
+            int mGroupPosition = groupPosition;
+            int mChildPosition = childPosition;
+
+            //  I passed a text string into an activity holding a getter/setter
+            //  which I passed in through "ExpListChildItems".
+            //  Here is where I call the getter to get that text
+            //childText = (string)GetChild(mGroupPosition, mChildPosition);
+
+            if (convertView == null)
+            {
+                convertView = _context.LayoutInflater.Inflate(Resource.Layout.custom_layout_list_item, null);
+                childViewHolder = new ChildViewHolder();
+
+                childViewHolder.mChildText = (TextView)convertView
+                        .FindViewById(Resource.Id.lblListItem);
+
+                childViewHolder.mCheckBox = (CheckBox)convertView
+                        .FindViewById(Resource.Id.lstcheckBox);
+
+                convertView.SetTag(Resource.Layout.custom_layout_list_item, childViewHolder);
+            }
+            else
+            {
+                childViewHolder = (ChildViewHolder)convertView
+                        .GetTag(Resource.Layout.custom_layout_list_item);
+            }
+            childViewHolder.mChildText.Text = childText;
+
+            /*
+             * You have to set the onCheckChangedListener to null
+             * before restoring check states because each call to
+             * "setChecked" is accompanied by a call to the
+             * onCheckChangedListener
+            */
+            childViewHolder.mCheckBox.Tag = Guid.NewGuid().ToString();
+            childViewHolder.mCheckBox.CheckedChange += MCheckBox_CheckedChange; 
+
+            if (_cildCheckStates.ContainsKey(mGroupPosition))
+            {
+                /*
+                 * if the hashmap mChildCheckStates<Integer, Boolean[]> contains
+                 * the value of the parent view (group) of this child (aka, the key),
+                 * then retrive the boolean array getChecked[]
+                */
+                bool[] getChecked = _cildCheckStates[mGroupPosition];
+
+                // set the check state of this position's checkbox based on the
+                // boolean value of getChecked[position]
+                childViewHolder.mCheckBox.Checked = getChecked[mChildPosition];
+            }
+            else
+            {
+                /*
+                 * if the hashmap mChildCheckStates<Integer, Boolean[]> does not
+                 * contain the value of the parent view (group) of this child (aka, the key),
+                 * (aka, the key), then initialize getChecked[] as a new boolean array
+                 *  and set it's size to the total number of children associated with
+                 *  the parent group
+                */
+                bool[] getChecked = new bool[GetChildrenCount(mGroupPosition)];
+
+                // add getChecked[] to the mChildCheckStates hashmap using mGroupPosition as the key
+                _cildCheckStates.Add(mGroupPosition, getChecked);
+
+                // set the check state of this position's checkbox based on the
+                // boolean value of getChecked[position]
+                childViewHolder.mCheckBox.Checked = false;
+            }
+
+            childViewHolder.mCheckBox.SetOnCheckedChangeListener(this);
+            return convertView;
+        }
+
+        private void MCheckBox_CheckedChange(object sender, CompoundButton.CheckedChangeEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int GetChildrenCount(int groupPosition)
+        {
+            return _listDataChild[_listDataHeader[groupPosition]].Count;
+        }
+
+        //For header view
+        public override Java.Lang.Object GetGroup(int groupPosition)
+        {
+            return _listDataHeader[groupPosition];
+        }
+
+        public override int GroupCount
+        {
+            get
+            {
+                return _listDataHeader.Count;
+            }
+        }
+
+        public override long GetGroupId(int groupPosition)
+        {
+            return groupPosition;
+        }
+
+        public override View GetGroupView(int groupPosition, bool isExpanded, View convertView, ViewGroup parent)
+        {
+            string headerTitle = (string)GetGroup(groupPosition);
+
+            //convertView ??= _context.LayoutInflater.Inflate(Resource.Layout.custom_layout_list_header, null);
+            //var lblListHeader = (TextView)convertView.FindViewById(Resource.Id.lblListHeader);
+            //lblListHeader.Text = headerTitle;
+
+            ////return convertView;
+
+            if (convertView == null)
+            {
+                LayoutInflater inflater = (LayoutInflater)_context.GetSystemService(Context.LayoutInflaterService);
+
+                convertView = inflater.Inflate(Resource.Layout.custom_layout_list_header, null);
+
+                // Initialize the GroupViewHolder defined at the bottom of this document
+                groupViewHolder = new GroupViewHolder();
+
+                groupViewHolder.mGroupText = (TextView)convertView.FindViewById(Resource.Id.lblListHeader);
+
+                convertView.Tag = groupViewHolder;
+            }
+            else
+            {
+                groupViewHolder = (GroupViewHolder)convertView.Tag;
+            }
+
+            groupViewHolder.mGroupText.Text = headerTitle;
+
+            return convertView;
+        }
+
+        public override bool HasStableIds
+        {
+            get
+            {
+                return false; // was default
+                //return true;
+            }
+        }
+
+        public override bool IsChildSelectable(int groupPosition, int childPosition)
+        {
+            return true;
+        }
+
+        public bool OnChildClick(ExpandableListView parent, View clickedView, int groupPosition, int childPosition, long id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnCheckedChanged(CompoundButton buttonView, bool isChecked)
+        {
+            System.Diagnostics.Debug.WriteLine("OnCheckedChanged");
+            //bool[] getChecked = _cildCheckStates[mGroupPosition];
+            //getChecked[mChildPosition] = isChecked;
+            //if (_cildCheckStates.ContainsKey(mGroupPosition))
+            //{
+            //    _cildCheckStates[mGroupPosition] = getChecked;
+            //}
+            //else
+            //{
+            //    _cildCheckStates.Add(mGroupPosition, getChecked);
+            //}
+            //if (isChecked)
+            //{
+            //    bool[] getChecked = mChildCheckStates[mGroupPosition];
+            //    getChecked[mChildPosition] = isChecked;
+            //    mChildCheckStates.Add(mGroupPosition, getChecked);
+
+            //}
+            //else
+            //{
+            //    bool[] getChecked = mChildCheckStates[mGroupPosition];
+            //    getChecked[mChildPosition] = isChecked;
+            //    mChildCheckStates.Add(mGroupPosition, getChecked);
+            //}
+
+            //throw new NotImplementedException();
+        }
+
+        private class ViewHolderItem : Java.Lang.Object
+        {
+        }
+
+        private class GroupViewHolder : Java.Lang.Object
+        {
+            public TextView mGroupText;
+        }
+
+        private class ChildViewHolder : Java.Lang.Object
+        {
+            public TextView mChildText;
+            public CheckBox mCheckBox;
+        }
+    }
+}

@@ -33,13 +33,32 @@ namespace KonoAndroid
             View view = inflater.Inflate(Resource.Layout.fragment_inbox, container, false);
 
             expListView = view.FindViewById<ExpandableListView>(Resource.Id.lvExp);
-
             // Prepare list data
             FnGetListData();
 
             //Bind list
-            listAdapter = new ExpandableListAdapter(Activity, listDataHeader, listDataChild);
+            listAdapter = new ExpandableListAdapter(Activity);
+
+            Random random = new Random();
+            double numHeader, numChild;
+            for (int i = 0; i < 15; i++)
+            {
+                //numHeader = random.NextDouble();
+                //listAdapter.AddHeader(numHeader.ToString(), numHeader >= 0.5);
+                //for (int j = 0; j < 15; j++)
+                //{
+                //    numChild = random.NextDouble();
+                //    listAdapter.AddChild(numChild.ToString(), numChild >= 0.5, i);
+                //}
+                listAdapter.AddHeader(i.ToString(), i >= 5);
+                for (int j = 0; j < 15; j++)
+                {
+                    listAdapter.AddChild(j.ToString(), j >= 5, i);
+                }
+            }
+
             expListView.SetAdapter(listAdapter);
+            //expListView.SetGroupIndicator(Android.Support.V4.Content.ContextCompat.GetDrawable(Context, Resource.Drawable.group_indicator));
 
             FnClickEvents();
 
@@ -53,13 +72,14 @@ namespace KonoAndroid
             //Listening to child item selection
             expListView.ChildClick += delegate (object sender, ExpandableListView.ChildClickEventArgs e)
             {
-                Toast.MakeText(Context, "child clicked", ToastLength.Short).Show();
+                Toast.MakeText(Context, "ChildClick", ToastLength.Short).Show();
             };
 
             //Listening to group expand
             //modified so that on selection of one group other opened group has been closed
             expListView.GroupExpand += delegate (object sender, ExpandableListView.GroupExpandEventArgs e)
             {
+                Toast.MakeText(Context, "GroupExpand", ToastLength.Short).Show();
                 if (e.GroupPosition != previousGroup)
                     expListView.CollapseGroup(previousGroup);
                 previousGroup = e.GroupPosition;
@@ -68,7 +88,7 @@ namespace KonoAndroid
             //Listening to group collapse
             expListView.GroupCollapse += delegate (object sender, ExpandableListView.GroupCollapseEventArgs e)
             {
-                Toast.MakeText(Context, "group collapsed", ToastLength.Short).Show();
+                Toast.MakeText(Context, "GroupCollapse", ToastLength.Short).Show();
             };
         }
 
@@ -84,113 +104,32 @@ namespace KonoAndroid
             listDataHeader.Add("Mechateronics");
             listDataHeader.Add("NeuroScience");
 
+
+
+
             // Adding child data
-            var lstCS = new List<string>
-            {
-                "Data structure",
-                "C# Programming",
-                "Java programming",
-                "ADA",
-                "Operation reserach",
-                "OOPS with C",
-                "Data structure",
-                "C# Programming",
-                "Java programming",
-                "ADA",
-                "Operation reserach",
-                "OOPS with C",
-                "Data structure",
-                "C# Programming",
-                "Java programming",
-                "ADA",
-                "Operation reserach",
-                "OOPS with C",
-                "Data structure",
-                "C# Programming",
-                "Java programming",
-                "ADA",
-                "Operation reserach",
-                "OOPS with C",
-                "Data structure",
-                "C# Programming",
-                "Java programming",
-                "ADA",
-                "Operation reserach",
-                "OOPS with C",
-                "C++ Programming"
-            };
+            var list1 = new List<string>();
+            var list2 = new List<string>();
+            var list3 = new List<string>();
+            var list4 = new List<string>();
+            var list5 = new List<string>();
 
-            var lstEC = new List<string>
+            for (int i = 0; i < 50; i++)
             {
-                "Field Theory",
-                "Logic Design",
-                "Analog electronics",
-                "Network analysis",
-                "Micro controller",
-                "Field Theory",
-                "Logic Design",
-                "Analog electronics",
-                "Network analysis",
-                "Micro controller",
-                "Field Theory",
-                "Logic Design",
-                "Analog electronics",
-                "Network analysis",
-                "Micro controller",
-                "Field Theory",
-                "Logic Design",
-                "Analog electronics",
-                "Network analysis",
-                "Micro controller",
-                "Field Theory",
-                "Logic Design",
-                "Analog electronics",
-                "Network analysis",
-                "Micro controller",
-                "Signals and system"
-            };
+                list1.Add(i.ToString());
+                list2.Add(Math.IEEERemainder(i, 5).ToString());
+                list3.Add(Math.IEEERemainder(i, 10).ToString());
+                list4.Add(new Random().NextDouble().ToString());
+            }
 
-            var lstMech = new List<string>
-            {
-                "Instrumentation technology",
-                "Dynamics of machinnes",
-                "Energy engineering",
-                "Design of machine",
-                "Turbo machine",
-                "Instrumentation technology",
-                "Dynamics of machinnes",
-                "Energy engineering",
-                "Design of machine",
-                "Turbo machine",
-                "Instrumentation technology",
-                "Dynamics of machinnes",
-                "Energy engineering",
-                "Design of machine",
-                "Turbo machine",
-                "Instrumentation technology",
-                "Dynamics of machinnes",
-                "Energy engineering",
-                "Design of machine",
-                "Turbo machine",
-                "Instrumentation technology",
-                "Dynamics of machinnes",
-                "Energy engineering",
-                "Design of machine",
-                "Turbo machine",
-                "Instrumentation technology",
-                "Dynamics of machinnes",
-                "Energy engineering",
-                "Design of machine",
-                "Turbo machine",
-                "Energy conversion"
-            };
+
 
             // Header, Child data
-            listDataChild.Add(listDataHeader[0], lstCS);
-            listDataChild.Add(listDataHeader[1], lstEC);
-            listDataChild.Add(listDataHeader[2], lstMech);
-            listDataChild.Add(listDataHeader[3], lstEC);
-            listDataChild.Add(listDataHeader[4], lstMech);
+            listDataChild.Add(listDataHeader[0], list1);
+            listDataChild.Add(listDataHeader[1], list2);
+            listDataChild.Add(listDataHeader[2], list3);
+            listDataChild.Add(listDataHeader[3], list4);
+            listDataChild.Add(listDataHeader[4], list5);
         }
     }
 }

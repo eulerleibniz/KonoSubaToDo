@@ -6,5 +6,10 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-    android:id="@+id/row_second_text"/>
+        android:textSize="@dimen/abc_text_size_medium_material"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_blue_dark"
+        android:text="Test"
+        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+        android:id="@+id/row_second_text"/>
 </LinearLayout>

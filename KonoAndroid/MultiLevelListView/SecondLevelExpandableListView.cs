@@ -4,6 +4,8 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using System;
+using Android.Support.V4.App;
+using Android.Support.V4.Content;
 
 namespace KonoAndroid
 {
@@ -34,6 +36,10 @@ namespace KonoAndroid
             heightMeasureSpec = MeasureSpec.MakeMeasureSpec(999999, MeasureSpecMode.AtMost);
 
             base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+            //this.ChoiceMode = ChoiceMode.Multiple;
+            //this.Clickable = true;
+
+            //this.SetGroupIndicator(ContextCompat.GetDrawable(Context, Resource.Drawable.group_indicator));
         }
     }
 }

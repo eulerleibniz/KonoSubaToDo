@@ -1,4 +1,7 @@
 ﻿using Android.App;
+using Android.Content;
+using Android.Media;
+using Android.OS;
 using Android.Views;
 using Android.Widget;
 using System;
@@ -11,20 +14,61 @@ namespace KonoAndroid
 {
     public class ExpandableListAdapter : BaseExpandableListAdapter
     {
-        #region Data
-        private readonly Activity _context;
-        private class GroupViewItem : Java.Lang.Object
+        public ExpandableListAdapter(Activity context)
+        {
+            if (listGroupViewItem == null)
+            {
+                listGroupViewItem = new List<GroupViewItem>();
+            }
+            if (listChildViewItem == null)
+            {
+                listChildViewItem = new List<ChildViewItem>();
+            }
+            _context = context;
+        }
+        public void AddHeader(string text, bool isCheked)
+        {
+            if (listGroupViewItem == null)
+            {
+                listGroupViewItem = new List<GroupViewItem>();
+            }
+            GroupViewItem groupViewItem = new GroupViewItem(listGroupViewItem.Count)
+            {
+                TextView = new TextView(_context) { Text = text },
+                CheckBox = new CheckBox(_context) { Checked = isCheked }
+            };
+            listGroupViewItem.Add(groupViewItem);
+        }
+        public void AddChild(string text, bool isCheked, int parentPosition)
+        {
+            if (listChildViewItem == null)
+            {
+                listChildViewItem = new List<ChildViewItem>();
+            }
+            ChildViewItem childViewItem = new ChildViewItem(parentPosition, listChildViewItem.Count(x => x.Position.Item1 == parentPosition))
+            {
+                TextView = new TextView(_context) { Text = text },
+                CheckBox = new CheckBox(_context) { Checked = isCheked }
+            };
+            listChildViewItem.Add(childViewItem);
+        }
+
+
+        public class GroupViewItem: Java.Lang.Object
         {
             public GroupViewItem(int position)
             {
                 Position = position;
             }
             public Guid Guid { get; } = Guid.NewGuid(); // C# 6 or higher
+
             public int Position { get; set; }
-            public string Text { get; set; }
-            public bool Checked { get; set; }
+            public ImageView ImageView { get; set; }
+            public TextView TextView { get; set; }
+            public CheckBox CheckBox { get; set; }
         }
-        private class ChildViewItem : Java.Lang.Object
+
+        public class ChildViewItem: Java.Lang.Object
         {
             public ChildViewItem(int groupPosition, int childPosition)
             {
@@ -32,48 +76,22 @@ namespace KonoAndroid
             }
             public Guid Guid { get; } = Guid.NewGuid(); // C# 6 or higher
             public (int, int) Position { get; set; }
-            public string Text { get; set; }
-            public bool Checked { get; set; }
-        }
-        private readonly List<GroupViewItem> listGroupViewItem;
-        private readonly List<ChildViewItem> listChildViewItem;
-        #endregion
-
-        #region Public Methods
-        public ExpandableListAdapter(Activity context)
-        {
-            listGroupViewItem = new List<GroupViewItem>();
-            listChildViewItem = new List<ChildViewItem>();
-            _context = context;
+            public ImageView ImageView { get; set; }
+            public TextView TextView { get; set; }
+            public CheckBox CheckBox { get; set; }
         }
 
-        public void AddHeader(string text, bool isCheked)
-        {
-            GroupViewItem groupViewItem = new GroupViewItem(listGroupViewItem.Count)
-            {
-                Text = text,
-                Checked = isCheked
-            };
-            listGroupViewItem.Add(groupViewItem);
-        }
+        public List<GroupViewItem> listGroupViewItem { get; set; }
+        public List<ChildViewItem> listChildViewItem { get; set; }
 
-        public void AddChild(string text, bool isCheked, int parentPosition)
-        {
-            ChildViewItem childViewItem = new ChildViewItem(parentPosition, listChildViewItem.Count(x => x.Position.Item1 == parentPosition))
-            {
-                Text = text,
-                Checked = isCheked
-            };
-            listChildViewItem.Add(childViewItem);
-        }
-
+        private readonly Activity _context;
 
         public override Java.Lang.Object GetChild(int groupPosition, int childPosition)
         {
             // Find doesn't throw exeption when condition returns a Null List
             // instead it returns null on result
             // Using First we get an Exception when condition returns a Null List
-            ChildViewItem childViewItem = listChildViewItem.Find(x => (x.Position == (groupPosition, childPosition)));
+            ChildViewItem childViewItem = listChildViewItem.Find(x => x.Position == (groupPosition, childPosition));
             if (childViewItem == null)
             {
                 return null;
@@ -83,9 +101,7 @@ namespace KonoAndroid
                 return childViewItem;
             }
         }
-        #endregion
 
-        #region overrides
         public override long GetChildId(int groupPosition, int childPosition)
         {
             return childPosition;
@@ -99,25 +115,20 @@ namespace KonoAndroid
             }
             CheckBox checkBoxChild = (CheckBox)convertView.FindViewById(Resource.Id.ExpandableListView_Child_CheckBox);
             TextView textViewChild = (TextView)convertView.FindViewById(Resource.Id.ExpandableListView_Child_TextView);
-
-            // Remove Events
-            checkBoxChild.CheckedChange -= CheckBoxChild_CheckedChange;
+            ImageView imageViewChild = (ImageView)convertView.FindViewById(Resource.Id.ExpandableListView_Child_ImageView);
 
 
-            checkBoxChild.Checked = listChildViewItem.Find(x => (x.Position == (groupPosition, childPosition))).Checked;
-            textViewChild.Text = listChildViewItem.Find(x => (x.Position == (groupPosition, childPosition))).Text;
+            checkBoxChild.Checked = listChildViewItem[groupPosition].CheckBox.Checked;
+            textViewChild.Text = listChildViewItem[groupPosition].TextView.Text;
+            //imageViewChild.SetImageDrawable(listChildViewItem[groupPosition].ImageView.Drawable);
 
-            listChildViewItem.Find(x => (x.Position == (groupPosition, childPosition))).Checked = checkBoxChild.Checked;
-            listChildViewItem.Find(x => (x.Position == (groupPosition, childPosition))).Text = textViewChild.Text;
+            listChildViewItem.Find(x => x.Position == (groupPosition, childPosition)).CheckBox = checkBoxChild;
+            listChildViewItem.Find(x => x.Position == (groupPosition, childPosition)).TextView = textViewChild;
+            listChildViewItem.Find(x => x.Position == (groupPosition, childPosition)).ImageView = imageViewChild;
 
-            checkBoxChild.Tag = listChildViewItem.Find(x => (x.Position == (groupPosition, childPosition)));
-            //textViewChild.Tag = listChildViewItem.Find(x => (x.Position == (groupPosition, childPosition)));
-            convertView.Tag = listChildViewItem.Find(x => (x.Position == (groupPosition, childPosition)));
 
-            // Add Events Again
             checkBoxChild.CheckedChange += CheckBoxChild_CheckedChange;
 
-            NotifyDataSetChanged();
             return convertView;
         }
 
@@ -146,6 +157,7 @@ namespace KonoAndroid
         {
             get
             {
+
                 return listGroupViewItem.Count;
             }
         }
@@ -161,30 +173,20 @@ namespace KonoAndroid
             {
                 convertView = _context.LayoutInflater.Inflate(Resource.Layout.custom_layout_list_header, null);
             }
-
-
             CheckBox checkBoxGroup = (CheckBox)convertView.FindViewById(Resource.Id.ExpandableListView_Header_CheckBox);
             TextView textViewGroup = (TextView)convertView.FindViewById(Resource.Id.ExpandableListView_Header_TextView);
+            ImageView imageViewGroup = (ImageView)convertView.FindViewById(Resource.Id.ExpandableListView_Header_ImageView);
 
-            // Remove Events
-            checkBoxGroup.CheckedChange -= CheckBoxGroup_CheckedChange;
+            checkBoxGroup.Checked = listGroupViewItem[groupPosition].CheckBox.Checked;
+            textViewGroup.Text = listGroupViewItem[groupPosition].TextView.Text;
+            //imageViewGroup.SetImageDrawable(listGroupViewItem[groupPosition].ImageView.Drawable);
 
-            checkBoxGroup.Checked = listGroupViewItem[groupPosition].Checked;
-            textViewGroup.Text = listGroupViewItem[groupPosition].Text;
+            listGroupViewItem[groupPosition].CheckBox = checkBoxGroup;
+            listGroupViewItem[groupPosition].TextView = textViewGroup;
+            listGroupViewItem[groupPosition].ImageView = imageViewGroup;
 
-            listGroupViewItem[groupPosition].Checked = checkBoxGroup.Checked;
-            listGroupViewItem[groupPosition].Text = textViewGroup.Text;
-
-            checkBoxGroup.Tag = listGroupViewItem[groupPosition];
-            //textViewGroup.Tag = listGroupViewItem[groupPosition];
-
-            // Add Events Again
-            checkBoxGroup.CheckedChange += CheckBoxGroup_CheckedChange;
-
-            NotifyDataSetChanged();
             return convertView;
         }
-
 
         public override bool HasStableIds
         {
@@ -197,32 +199,24 @@ namespace KonoAndroid
 
         public override bool IsChildSelectable(int groupPosition, int childPosition)
         {
-            return false;
+            return true;
         }
-        #endregion
 
-        #region Event Handlers
-        private void CheckBoxGroup_CheckedChange(object sender, CompoundButton.CheckedChangeEventArgs e)
+        public bool OnChildClick(ExpandableListView parent, View clickedView, int groupPosition, int childPosition, long id)
         {
-            CheckBox checkBox = (CheckBox)sender;
-
-            GroupViewItem groupViewItem = (GroupViewItem)(checkBox.Tag);
-            listGroupViewItem.Find(x => (x.Position == groupViewItem.Position)).Checked = checkBox.Checked;
-            //NotifyDataSetChanged();
-            System.Diagnostics.Debug.WriteLine("CheckBoxGroup_CheckedChange");
+            throw new NotImplementedException();
         }
+
+        //public void OnCheckedChanged(CompoundButton buttonView, bool isChecked)
+        //{
+        //    System.Diagnostics.Debug.WriteLine("OnCheckedChanged");
+        //}
+
         private void CheckBoxChild_CheckedChange(object sender, CompoundButton.CheckedChangeEventArgs e)
         {
-            CheckBox checkBox = (CheckBox)sender;
-
-            ChildViewItem childViewItem = (ChildViewItem)(checkBox.Tag);
-
-            listChildViewItem.Find(x => (x.Position == childViewItem.Position)).Checked = checkBox.Checked;
-            //NotifyDataSetChanged();
-
-            System.Diagnostics.Debug.WriteLine("CheckBoxChild_CheckedChange");
+            System.Diagnostics.Debug.WriteLine(sender.ToString());
+            System.Diagnostics.Debug.WriteLine(e.ToString());
         }
-        
-        #endregion
+
     }
 }
