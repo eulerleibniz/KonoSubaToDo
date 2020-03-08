@@ -20,7 +20,6 @@ namespace KonoAndroid
         {
             base.OnCreate(savedInstanceState, persistentState);
             Log.Debug(TAG, "SplashActivity.OnCreate");
-
         }
 
         // Launches the startup task

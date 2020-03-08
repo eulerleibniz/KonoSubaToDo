@@ -18,7 +18,6 @@ namespace KonoAndroid
             if (inflater == null)
             {
                 throw new NullReferenceException();
-
             }
             // Use this to return your custom view for this Fragment
             return inflater.Inflate(Resource.Layout.fragment_settings, container, false);

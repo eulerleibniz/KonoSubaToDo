@@ -1,16 +1,17 @@
-﻿using System;
-using Android.Widget;
-using System.Collections.Generic;
-using Android.App;
+﻿using Android.App;
 using Android.Views;
- 
+using Android.Widget;
+using System;
+using System.Collections.Generic;
+
 namespace KonoAndroid
 {
     public class ExpandableListAdapter : BaseExpandableListAdapter
     {
         private readonly Activity _context;
         private readonly List<string> _listDataHeader; // header titles
-                                              // child data in format of header title, child title
+
+        // child data in format of header title, child title
         private readonly Dictionary<string, List<string>> _listDataChild;
 
         public ExpandableListAdapter(Activity context, List<string> listDataHeader, Dictionary<String, List<string>> listChildData)
@@ -19,11 +20,13 @@ namespace KonoAndroid
             _listDataHeader = listDataHeader;
             _listDataChild = listChildData;
         }
+
         //for cchild item view
         public override Java.Lang.Object GetChild(int groupPosition, int childPosition)
         {
             return _listDataChild[_listDataHeader[groupPosition]][childPosition];
         }
+
         public override long GetChildId(int groupPosition, int childPosition)
         {
             return childPosition;
@@ -40,15 +43,18 @@ namespace KonoAndroid
             txtListChild.Text = childText;
             return convertView;
         }
+
         public override int GetChildrenCount(int groupPosition)
         {
             return _listDataChild[_listDataHeader[groupPosition]].Count;
         }
+
         //For header view
         public override Java.Lang.Object GetGroup(int groupPosition)
         {
             return _listDataHeader[groupPosition];
         }
+
         public override int GroupCount
         {
             get
@@ -56,10 +62,12 @@ namespace KonoAndroid
                 return _listDataHeader.Count;
             }
         }
+
         public override long GetGroupId(int groupPosition)
         {
             return groupPosition;
         }
+
         public override View GetGroupView(int groupPosition, bool isExpanded, View convertView, ViewGroup parent)
         {
             string headerTitle = (string)GetGroup(groupPosition);
@@ -70,6 +78,7 @@ namespace KonoAndroid
 
             return convertView;
         }
+
         public override bool HasStableIds
         {
             get
@@ -77,12 +86,13 @@ namespace KonoAndroid
                 return false;
             }
         }
+
         public override bool IsChildSelectable(int groupPosition, int childPosition)
         {
             return true;
         }
 
-        class ViewHolderItem : Java.Lang.Object
+        private class ViewHolderItem : Java.Lang.Object
         {
         }
     }

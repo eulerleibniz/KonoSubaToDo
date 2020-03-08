@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 namespace KonoAndroid.Model
 {
     public class DatabaseToDo : DbContext
@@ -29,7 +30,6 @@ namespace KonoAndroid.Model
             if (modelBuilder == null)
             {
                 throw new NullReferenceException();
-
             }
             modelBuilder.Entity<Item>().HasKey(p => p.Id);
             modelBuilder.Entity<Item>().Property(p => p.Text).IsRequired();

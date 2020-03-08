@@ -1,18 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="55dip"
-    android:orientation="vertical">
-    <TextView
-        android:id="@+id/lblListItem"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:text="test"
-        android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
-        android:textColor="#fff69212"
-        android:textStyle="bold"
-        android:background="#ffffffff" />
-</LinearLayout>
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"
+   android:background="#FFDAFF7F"
+   android:padding="8dp">
+    <LinearLayout android:id="@+id/Text"
+       android:orientation="vertical"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:paddingLeft="10dip">
+        <TextView
+         android:id="@+id/lblListItem"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:textColor="#FF7F3300"
+         android:textSize="20dip"
+         android:textStyle="italic"
+         android:text="Text1"/>
+        <TextView
+         android:id="@+id/Text2"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:textSize="14dip"
+         android:textColor="#FF267F00"
+         android:paddingLeft="100dip"
+         android:text="Text2"/>
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/Image"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="5dp"
+        android:src="@drawable/ic_menu_share"
+        android:layout_alignParentRight="true" />
+</RelativeLayout >

@@ -115,7 +115,7 @@ namespace KonoAndroid
 
         public bool OnNavigationItemSelected(IMenuItem item)
         {
-            if (item==null)
+            if (item == null)
             {
                 throw new NullReferenceException();
             }
